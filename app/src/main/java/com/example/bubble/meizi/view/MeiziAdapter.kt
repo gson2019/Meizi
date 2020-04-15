@@ -41,10 +41,6 @@ class MeiziAdapter(context: Context, meizis: MutableList<Hit>) : RecyclerView.Ad
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val meizi = girlList[position]
-//        val updatedUrl = meizi.url.replace("http", "https");
-//        Log.d("Meizi", updatedUrl)
-//        val ratio = ratios[(0..2).random()]
-//        Log.d("Meizi", ratio)
         if(holder is MeiziHolder){
             with(meizi){
                 val ratio = String.format("%d:%d", imageWidth, imageHeight)
