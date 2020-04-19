@@ -18,15 +18,25 @@ import kotlinx.android.synthetic.main.meizi_item.view.*
 import org.w3c.dom.Text
 import kotlin.random.Random
 
-class MeiziAdapter(context: Context, meizis: MutableList<Hit>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MeiziAdapter(context: Context,
+                   meizis: MutableList<Hit>,
+                   onItemClickListener: OnItemClickListener
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var mContext = context
     private var girlList = meizis
     private val constraintSet = ConstraintSet()
+    private val onClickListener: OnItemClickListener = onItemClickListener
     inner class MeiziHolder constructor(itemView: View) : RecyclerView.ViewHolder(itemView){
         val mConstraintLayout: ConstraintLayout = itemView.findViewById(R.id.parentContraint)
         val girlImage: ImageView = itemView.findViewById(R.id.girlIv)
         val descTv: TextView = itemView.findViewById(R.id.descTv)
         val likeTv: TextView = itemView.findViewById(R.id.likeCount)
+//        init {
+//            itemView.setOnClickListener(this)
+//        }
+//        override fun onClick(p0: View) {
+//            onClickListener.onClick(p0, p0.tag as Int)
+//        }
     }
     private val ratios = arrayOf("3:5","9:16", "5:4");
 
@@ -39,9 +49,16 @@ class MeiziAdapter(context: Context, meizis: MutableList<Hit>) : RecyclerView.Ad
         return girlList.size
     }
 
+    interface OnItemClickListener {
+        fun onClick(hit: Hit, position: Int)
+    }
+
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val meizi = girlList[position]
         if(holder is MeiziHolder){
+            holder.itemView.saveToggle.setOnClickListener {
+                onClickListener.onClick(meizi, position)
+            }
             with(meizi){
                 val ratio = String.format("%d:%d", imageWidth, imageHeight)
                 holder.descTv.text = tags
