@@ -23,6 +23,15 @@ class DataRepository constructor(private val meiziApi:MeiziService,  private val
         }
     }
 
+    suspend fun deleteImage(hit: Hit) : String? {
+        return try {
+            favImgDao.deleteHit(hit)
+            null
+        } catch (e: Exception) {
+            e.toString()
+        }
+    }
+
     suspend fun getLocalFavHits(): List<Hit> {
         return favImgDao.getFavHits()
     }

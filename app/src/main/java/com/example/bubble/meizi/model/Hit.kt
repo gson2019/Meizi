@@ -19,12 +19,11 @@ data class Hit(
     val user: String,
     @Ignore
     val userImageURL: String,
-    @Ignore
-    val isSaved: Boolean,
+    var isSaved: Boolean,
     val user_id: Int,
     val views: Int
 ) {
      constructor(downloads: Int, favorites: Int, id: Int, imageHeight: Int, imageWidth: Int,
-                 largeImageURL: String, likes: Int, tags: String, type:String, user: String, user_id: Int, views: Int) :
-             this(downloads, favorites, id, imageHeight, imageWidth, largeImageURL, likes, tags, type, user, "", false, user_id, views)
+                 largeImageURL: String, likes: Int, tags: String, type:String, user: String, isSaved: Boolean, user_id: Int, views: Int) :
+             this(downloads, favorites, id, imageHeight, imageWidth, largeImageURL, likes, tags, type, user, "", isSaved, user_id, views)
 }

@@ -40,9 +40,17 @@ class FavoriteFragment : Fragment() {
 
         meiziViewModel.getLocalFavHits()
         meiziViewModel.favHits.observe(viewLifecycleOwner, Observer {
+            Log.d("Meizi", "Favorite hits size ${it.size}")
             favRv.adapter = MeiziAdapter(requireActivity(), it.toMutableList(), object: MeiziAdapter.OnItemClickListener{
                 override fun onClick(hit: Hit, position: Int) {
-//                    meiziViewModel.saveFavImage(hit)
+                    Log.d("Meizi", "hit saved ${hit.isSaved} + ")
+                    if (hit.isSaved) {
+                        hit.isSaved = false
+                        meiziViewModel.deleteFavImage(hit)
+                    } else {
+                        hit.isSaved = true
+                        meiziViewModel.saveFavImage(hit)
+                    }
                     Toast.makeText(requireActivity(), "Item ${position} is clicked", Toast.LENGTH_LONG).show()
                 }
             })

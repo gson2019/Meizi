@@ -56,6 +56,7 @@ class MeiziAdapter(context: Context,
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val meizi = girlList[position]
         if(holder is MeiziHolder){
+            holder.itemView.saveToggle.isChecked = meizi.isSaved
             holder.itemView.saveToggle.setOnClickListener {
                 onClickListener.onClick(meizi, position)
             }
