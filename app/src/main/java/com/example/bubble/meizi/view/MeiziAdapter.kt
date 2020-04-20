@@ -20,6 +20,7 @@ import kotlin.random.Random
 
 class MeiziAdapter(context: Context,
                    meizis: MutableList<Hit>,
+                   val hitMap: HashMap<Int, Boolean>,
                    onItemClickListener: OnItemClickListener
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var mContext = context
@@ -31,14 +32,7 @@ class MeiziAdapter(context: Context,
         val girlImage: ImageView = itemView.findViewById(R.id.girlIv)
         val descTv: TextView = itemView.findViewById(R.id.descTv)
         val likeTv: TextView = itemView.findViewById(R.id.likeCount)
-//        init {
-//            itemView.setOnClickListener(this)
-//        }
-//        override fun onClick(p0: View) {
-//            onClickListener.onClick(p0, p0.tag as Int)
-//        }
     }
-    private val ratios = arrayOf("3:5","9:16", "5:4");
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder{
         val view = LayoutInflater.from(mContext).inflate(R.layout.meizi_item, parent, false)
@@ -56,7 +50,7 @@ class MeiziAdapter(context: Context,
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val meizi = girlList[position]
         if(holder is MeiziHolder){
-            holder.itemView.saveToggle.isChecked = meizi.isSaved
+            holder.itemView.saveToggle.isChecked = hitMap[meizi.id]!!
             holder.itemView.saveToggle.setOnClickListener {
                 onClickListener.onClick(meizi, position)
             }

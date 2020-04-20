@@ -1,16 +1,22 @@
 package com.example.bubble.meizi.repository
 
-import android.app.Application
 import com.example.bubble.meizi.database.FavImageDao
-import com.example.bubble.meizi.database.FavImgDatabase
 import com.example.bubble.meizi.model.Hit
 import com.example.bubble.meizi.model.PixabayPhotoResponse
-import com.example.bubble.meizi.network.MeiziNetwork
 import com.example.bubble.meizi.network.MeiziService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class DataRepository constructor(private val meiziApi:MeiziService,  private val favImgDao: FavImageDao) {
+    val favHits = favImgDao.getFavHits()
+
     suspend fun getNetworkImages(key: String, query: String, type: String) : PixabayPhotoResponse {
-        return meiziApi.getPixabayImgs(key, query, type)
+        var pixabayPhotoResponse:PixabayPhotoResponse? = null
+        withContext(Dispatchers.IO) {
+            val pixabayRes = meiziApi.getPixabayImgs(key, query, type).await()
+            pixabayPhotoResponse = pixabayRes
+        }
+        return pixabayPhotoResponse!!
     }
 
     // insert one image to database
@@ -32,7 +38,12 @@ class DataRepository constructor(private val meiziApi:MeiziService,  private val
         }
     }
 
-    suspend fun getLocalFavHits(): List<Hit> {
-        return favImgDao.getFavHits()
+     suspend fun getLocalFavHits(): List<Hit> {
+         var localHits:List<Hit>? = null
+         withContext(Dispatchers.IO) {
+             val res = favImgDao.getAllFavHits()
+             localHits = res
+         }
+        return localHits!!
     }
 }

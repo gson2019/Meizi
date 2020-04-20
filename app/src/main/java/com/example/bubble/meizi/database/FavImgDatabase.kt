@@ -9,7 +9,7 @@ import com.example.bubble.meizi.network.MeiziNetwork.Companion.instance
 
 @Database(entities = [Hit::class], version = 1)
 abstract class FavImgDatabase: RoomDatabase() {
-    abstract fun favImgDao(): FavImageDao
+    abstract val favImgDao: FavImageDao
     companion object {
         @Volatile
         private var INSTANCE: FavImgDatabase? = null

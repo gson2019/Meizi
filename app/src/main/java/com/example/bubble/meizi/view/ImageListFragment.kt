@@ -16,6 +16,7 @@ import com.example.bubble.meizi.model.Hit
 import com.example.bubble.meizi.network.MeiziNetwork
 import com.example.bubble.meizi.repository.DataRepository
 import com.example.bubble.meizi.viewmodel.MeiziViewModel
+import kotlinx.android.synthetic.main.fragment_favorite.*
 import kotlinx.android.synthetic.main.fragment_image_list.*
 
 class ImageListFragment : Fragment() {
@@ -23,21 +24,30 @@ class ImageListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val dataRepository = DataRepository(MeiziNetwork.instance.getPixabayService(), FavImgDatabase.getDatabase(requireActivity().applicationContext)!!.favImgDao())
+        val dataRepository = DataRepository(MeiziNetwork.instance.getPixabayService(), FavImgDatabase.getDatabase(requireActivity().applicationContext)!!.favImgDao)
         meiziViewModel = ViewModelProvider(requireActivity(), MeiziViewModel.MeiziViewModelFactory(dataRepository)).get(MeiziViewModel::class.java)
 
         val staggeredGridLayoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         meiziRv.layoutManager = staggeredGridLayoutManager
-        meiziViewModel.getLocalFavHits()
+
+        meiziViewModel.favHits.observe(viewLifecycleOwner, Observer {
+            Log.d("Meizi", "Favorite hits size ${it.size}")
+            it.forEach{
+                hit -> meiziViewModel.hitMap[hit.id] = true
+            }
+        })
 
         meiziViewModel.content.observe(requireActivity(), Observer {
             progressBar.visibility = View.INVISIBLE
-            meiziRv.adapter = MeiziAdapter(requireContext(), it.toMutableList(), object: MeiziAdapter.OnItemClickListener{
+            meiziRv.adapter = MeiziAdapter(requireContext(), it.toMutableList(), meiziViewModel.hitMap, object: MeiziAdapter.OnItemClickListener{
                 override fun onClick(hit: Hit, position: Int) {
-                    if (!hit.isSaved) {
-                        hit.isSaved = true
+                    Log.d("Meizi", "isSaved ${hit.isSaved}")
+                    if (!meiziViewModel.hitMap[hit.id]!!) {
                         meiziViewModel.saveFavImage(hit)
+                    } else {
+                        meiziViewModel.deleteFavImage(hit)
                     }
+                    meiziViewModel.setHitSavedState(hit.id)
                     Toast.makeText(requireActivity(), "Item ${position} is saved", Toast.LENGTH_LONG).show()
                 }
             })

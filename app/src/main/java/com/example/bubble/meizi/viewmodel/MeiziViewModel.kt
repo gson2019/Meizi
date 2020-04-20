@@ -13,27 +13,20 @@ import kotlinx.coroutines.withContext
 import java.lang.Exception
 
 class MeiziViewModel(private val dataRepository: DataRepository) : ViewModel() {
-    var content:MutableLiveData<List<Hit>> = MutableLiveData()
-    val favHits: MutableLiveData<List<Hit>> by lazy { MutableLiveData<List<Hit>>()}
+    var content: MutableLiveData<List<Hit>> = MutableLiveData()
+    var hitMap = hashMapOf<Int, Boolean>()
+    val favHits = dataRepository.favHits
     suspend fun getRemoteMeizis(query: String, type: String) {
-        viewModelScope.launch(Dispatchers.Default) {
-            try {
-                val meiziRemoteData = dataRepository.getNetworkImages("15844840-d5e06026857e3e31a83ef6638", query, type)
-                content!!.postValue(meiziRemoteData.hits)
-            } catch (e:Exception) {
-                Log.e("MeiziFailure", e.message)
-                e.printStackTrace()
+        try {
+            val meiziRemoteData =
+                dataRepository.getNetworkImages("15844840-d5e06026857e3e31a83ef6638", query, type)
+            content.postValue(meiziRemoteData.hits)
+            meiziRemoteData.hits.forEach {
+                hitMap[it.id] = false
             }
-        }
-    }
-
-    fun getLocalFavHits() {
-        viewModelScope.launch(Dispatchers.IO){
-            val fetchedFavHits = dataRepository.getLocalFavHits()
-            Log.d("Meizi", "local Hits count ${fetchedFavHits.size}")
-            withContext(Dispatchers.Main) {
-                favHits.value = fetchedFavHits
-            }
+        } catch (e: Exception) {
+            Log.e("MeiziFailure", e.message)
+            e.printStackTrace()
         }
     }
 
@@ -49,11 +42,23 @@ class MeiziViewModel(private val dataRepository: DataRepository) : ViewModel() {
         }
     }
 
+    fun setHitSavedState(id:Int) {
+        hitMap[id] = !hitMap[id]!!
+    }
+
     init {
+//        favHits.value!!.forEach {
+//            hitMap[it.id] = true
+//        }
+//        favHits.observe(viewModelScope, )
+//        favHits.observe()
         viewModelScope.launch {
             getRemoteMeizis("German Shepherd", "photo")
+            val localHits =  dataRepository.getLocalFavHits()
+            localHits.forEach {
+                hit -> hitMap[hit.id] = true
+            }
         }
-
     }
 
     // custom view model factory, use to build pass variables to view model

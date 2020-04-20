@@ -2,6 +2,8 @@ package com.example.bubble.meizi.network
 
 import com.example.bubble.meizi.model.GankeResponse
 import com.example.bubble.meizi.model.PixabayPhotoResponse
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import kotlinx.coroutines.Deferred
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -15,7 +17,7 @@ interface MeiziService{
     suspend fun getMeiziInfos(@Path("category") category: String, @Path("type") type: String, @Path("page") page: Int, @Path("count") count:Int):GankeResponse
 
     @GET("api/")
-    suspend fun getPixabayImgs(@Query("key") key : String, @Query("q") query : String, @Query("image_type") photoType: String ) : PixabayPhotoResponse
+    fun getPixabayImgs(@Query("key") key : String, @Query("q") query : String, @Query("image_type") photoType: String ) : Deferred<PixabayPhotoResponse>
 }
 
 class MeiziNetwork private constructor(){
@@ -26,6 +28,7 @@ class MeiziNetwork private constructor(){
             meiziService = Retrofit.Builder()
                 .client(getLoggingOkClient())
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(CoroutineCallAdapterFactory())
                 .baseUrl("https://gank.io/api/v2/")
                 .build()
                 .create(MeiziService::class.java)
@@ -38,13 +41,13 @@ class MeiziNetwork private constructor(){
             pixabayService = Retrofit.Builder()
                 .client(getLoggingOkClient())
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(CoroutineCallAdapterFactory())
                 .baseUrl("https://pixabay.com")
                 .build()
                 .create(MeiziService::class.java)
         }
         return pixabayService!!
     }
-
 
     private fun getLoggingOkClient(): OkHttpClient {
         val httpClientBuilder = OkHttpClient.Builder()
