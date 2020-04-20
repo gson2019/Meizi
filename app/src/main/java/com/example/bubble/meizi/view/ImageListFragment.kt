@@ -30,25 +30,23 @@ class ImageListFragment : Fragment() {
         val staggeredGridLayoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         meiziRv.layoutManager = staggeredGridLayoutManager
 
-        meiziViewModel.favHits.observe(viewLifecycleOwner, Observer {
-            Log.d("Meizi", "Favorite hits size ${it.size}")
-            it.forEach{
-                hit -> meiziViewModel.hitMap[hit.id] = true
-            }
-        })
+//        meiziViewModel.favHits.observe(viewLifecycleOwner, Observer {
+//            Log.d("Meizi", "Favorite hits size ${it.size}")
+//            it.forEach{
+//                hit -> meiziViewModel.hitMap[hit.id] = true
+//            }
+//        })
 
         meiziViewModel.content.observe(requireActivity(), Observer {
             progressBar.visibility = View.INVISIBLE
             meiziRv.adapter = MeiziAdapter(requireContext(), it.toMutableList(), meiziViewModel.hitMap, object: MeiziAdapter.OnItemClickListener{
                 override fun onClick(hit: Hit, position: Int) {
-                    Log.d("Meizi", "isSaved ${hit.isSaved}")
                     if (!meiziViewModel.hitMap[hit.id]!!) {
                         meiziViewModel.saveFavImage(hit)
                     } else {
                         meiziViewModel.deleteFavImage(hit)
                     }
                     meiziViewModel.setHitSavedState(hit.id)
-                    Toast.makeText(requireActivity(), "Item ${position} is saved", Toast.LENGTH_LONG).show()
                 }
             })
         })

@@ -47,11 +47,6 @@ class MeiziViewModel(private val dataRepository: DataRepository) : ViewModel() {
     }
 
     init {
-//        favHits.value!!.forEach {
-//            hitMap[it.id] = true
-//        }
-//        favHits.observe(viewModelScope, )
-//        favHits.observe()
         viewModelScope.launch {
             getRemoteMeizis("German Shepherd", "photo")
             val localHits =  dataRepository.getLocalFavHits()

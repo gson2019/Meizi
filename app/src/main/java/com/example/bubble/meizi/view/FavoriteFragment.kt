@@ -38,16 +38,10 @@ class FavoriteFragment : Fragment() {
         meiziViewModel = ViewModelProvider(requireActivity(), MeiziViewModel.MeiziViewModelFactory(dataRepository)).get(MeiziViewModel::class.java)
 
         meiziViewModel.favHits.observe(viewLifecycleOwner, Observer {
-            Log.d("Meizi", "Favorite hits size ${it.size}")
-//            it.forEach{
-//                hit -> meiziViewModel.hitMap[hit.id] = true
-//            }
             favRv.adapter = MeiziAdapter(requireActivity(), it.toMutableList(), meiziViewModel.hitMap, object: MeiziAdapter.OnItemClickListener{
                 override fun onClick(hit: Hit, position: Int) {
-                    Log.d("Meizi", "hit saved ${hit.isSaved} + ")
                     meiziViewModel.hitMap[hit.id] = false
                     meiziViewModel.deleteFavImage(hit)
-                    Toast.makeText(requireActivity(), "Item ${position} is clicked", Toast.LENGTH_LONG).show()
                 }
             })
             favRv.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
