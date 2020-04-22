@@ -47,6 +47,10 @@ class MeiziAdapter(context: Context,
         fun onClick(hit: Hit, position: Int)
     }
 
+    fun addHits(hits: List<Hit>) {
+        girlList = hits.toMutableList()
+    }
+
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val meizi = girlList[position]
         if(holder is MeiziHolder){

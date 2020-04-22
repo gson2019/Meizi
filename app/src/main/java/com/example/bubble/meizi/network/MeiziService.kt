@@ -13,29 +13,12 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface MeiziService{
-    @GET("data/category/{category}/type/{type}/page/{page}/count/{count}")
-    suspend fun getMeiziInfos(@Path("category") category: String, @Path("type") type: String, @Path("page") page: Int, @Path("count") count:Int):GankeResponse
-
     @GET("api/")
     fun getPixabayImgs(@Query("key") key : String, @Query("q") query : String, @Query("image_type") photoType: String ) : Deferred<PixabayPhotoResponse>
 }
 
 class MeiziNetwork private constructor(){
-    private var meiziService: MeiziService? = null;
     private var pixabayService : MeiziService ? = null;
-    fun getMeiziClient(): MeiziService{
-        if(meiziService == null){
-            meiziService = Retrofit.Builder()
-                .client(getLoggingOkClient())
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(CoroutineCallAdapterFactory())
-                .baseUrl("https://gank.io/api/v2/")
-                .build()
-                .create(MeiziService::class.java)
-        }
-        return meiziService!!
-    }
-
     fun getPixabayService() : MeiziService{
         if(pixabayService == null){
             pixabayService = Retrofit.Builder()
